@@ -1,81 +1,80 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV de Pierre Husson</title>
-    <link href="style.css" rel="stylesheet">
+<meta charset="UTF-8" />
+<title>Quiz WikiArt</title>
 </head>
 <body>
-    <header>
-        <h1>CV - Pierre Husson</h1>
-        <p><strong>Email :</strong> pierre.husson@chartes.psl.eu</p>
-    </header>
 
-    <section>
-        <h2>Formation</h2>
-        <ul>
-            <li>2023-2025 : Master « Archives - Technologies numériques appliquées à l'histoire » - École nationale des Chartes - PSL</li>
-            <li>2021-2023 : Deuxième cycle de l’École du Louvre, muséologie - Mention « Très bien » - Erasmus à l’Université de Padoue, Italie</li>
-            <li>2018-2021 : Premier cycle de l’École du Louvre, histoire de l’art et archéologie (Spécialités : Histoire de l’Estampe et Patrimoine technique et industriel)</li>
-        </ul>
-    </section>
+<img id="artImage" src="" width="400"><br>
 
-    <section>
-        <h2>Séminaires internationaux</h2>
-        <ul>
-            <li>Septembre 2024 : « Medieval Manuscripts: From Digital to Material » - Charles University, Prague ; Humboldt Universität, Berlin ; EPHE, Paris ; École nationale des Chartes - PSL, Paris</li>
-            <li>Juin 2023 : Séminaire d’histoire de l’art vénitien - École du Louvre, Paris ; Istituto Veneto di Scienze, Lettere ed Arti, Venise</li>
-        </ul>
-    </section>
+<div id="quiz"></div>
+<div id="result"></div>
+<button id="nextBtn" onclick="nextImage()" style="display:none;">Image suivante</button>
 
-    <section>
-        <h2>Distinction</h2>
-        <p>Octobre 2023 : Premier prix du jury du concours « Mon master en histoire de l'art en 180 secondes » organisé par l’Institut national d’histoire de l’art.</p>
-    </section>
+<script src="images_data.js"></script>
 
-    <section>
-        <h2>Expérience professionnelle</h2>
-        <h3>Stages</h3>
-        <ul>
-            <li>Août à novembre 2024 : Vacation - Comité des travaux historiques et scientifiques (CTHS)</li>
-            <li>Mai à juillet 2024 : Stage en conservation - Bibliothèque nationale de France, Département des manuscrits, Paris</li>
-            <li>Février et mars 2022 : Stage en conservation - Petit Palais, Musée des Beaux-Arts de la Ville de Paris</li>
-            <li>Juin et juillet 2021 : Stage en galerie - Galerie Paul Prouté, Paris</li>
-            <li>Août 2019 : Stage en conservation - Musée des Beaux-Arts - La Cohue, Vannes</li>
-        </ul>
-        <h3>Publication</h3>
-        <p>2025 : Rédaction de 24 notices pour le catalogue de l'exposition "Chefs-d'œuvre inconnus de Dürer à Fantin-Latour" (Musée de Grenoble, 8 mars - 9 juin 2025).</p>
-    </section>
+<script>
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+ 
+shuffle(images);
 
-    <section>
-        <h2>Activité associative</h2>
-        <ul>
-            <li>2023-2024 : Professeur de danse pour le Bal de l’École des Chartes</li>
-            <li>2021-2022 : Président de l’Orchestre de l’École du Louvre</li>
-        </ul>
-    </section>
+const allArtists = [...new Set(images.map(i => i.artist))];
 
-    <section>
-        <h2>Compétences techniques</h2>
-        <ul>
-            <li>HTML et CSS</li>
-            <li>Git</li>
-            <li>XML</li>
-            <li>Python</li>
-            <li>SQL</li>
-        </ul>
-    </section>
+let currentIndex = -1;
 
-    <section>
-        <h2>Langues</h2>
-        <ul>
-            <li>Italien : lu, parlé, écrit</li>
-            <li>Anglais : lu, parlé, écrit</li>
-            <li>Espagnol : lu</li>
-            <li>Néerlandais : notions</li>
-            <li>Allemand : notions</li>
-        </ul>
-    </section>
+function shuffle(array) {
+  for (let i = array.length -1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function nextImage(){
+  currentIndex = (currentIndex + 1) % images.length;
+  const image = images[currentIndex];
+
+  document.getElementById('artImage').src = image.src;
+  document.getElementById('result').textContent = '';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  // Filtrer artistes par même style
+  const artistsSameStyle = [...new Set(
+    images.filter(i => i.style === image.style).map(i => i.artist)
+  )];
+
+  // Choix artistes : 1 vrai + 2 faux dans le même style
+  let choices = [image.artist];
+  let others = artistsSameStyle.filter(a => a !== image.artist);
+  shuffle(others);
+  choices.push(others[0], others[1]);
+  shuffle(choices);
+
+  const quizDiv = document.getElementById('quiz');
+  quizDiv.innerHTML = '';
+
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.textContent = choice;
+    btn.onclick = () => {
+      if (choice === image.artist) {
+        document.getElementById('result').textContent = `Bravo! ${image.artist} - "${image.title}" (${image.year})`;
+        document.getElementById('nextBtn').style.display = 'inline';
+      } else {
+        document.getElementById('result').textContent = 'Faux! Essaie encore.';
+      }
+    };
+    quizDiv.appendChild(btn);
+  });
+}
+
+nextImage();
+</script>
+
 </body>
 </html>
